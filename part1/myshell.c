@@ -10,13 +10,13 @@
 #define MAX_ARGS 20
 #define BUFSIZ 1024
 
-int get_args(char* cmdline, char* args[]) 
+int get_args(char* cmdline, char* args[])
 {
   int i = 0;
 
   /* if no args */
-  if((args[0] = strtok(cmdline, "\n\t ")) == NULL) 
-    return 0; 
+  if((args[0] = strtok(cmdline, "\n\t ")) == NULL)
+    return 0;
 
   while((args[++i] = strtok(NULL, "\n\t ")) != NULL) {
     if(i >= MAX_ARGS) {
@@ -28,18 +28,18 @@ int get_args(char* cmdline, char* args[])
   return i;
 }
 
-void execute(char* cmdline) 
+void execute(char* cmdline)
 {
   int pid, async;
   char* args[MAX_ARGS];
 
   int nargs = get_args(cmdline, args);
   if(nargs <= 0) return;
-  
-/* 
+
+/*
 strcmp() compares two strings
 Returns 0 if they are equal which will make the if statement true
-and thus 
+and thus
 */
   if(!strcmp(args[0], "quit") || !strcmp(args[0], "exit")) {
     exit(0);
@@ -57,7 +57,7 @@ and thus
     exit(-1);
   } else if(pid > 0) { /* parent process */
     if(!async) waitpid(pid, NULL, 0);
-    else printf("this is an async call\n");
+    else printf("PID %d\n", getpid());
   } else { /* error occurred */
     perror("fork failed");
     exit(1);
@@ -67,14 +67,14 @@ and thus
 int main (int argc, char* argv [])
 {
   char cmdline[BUFSIZ];
-  
+
   for(;;) {
     printf("Cabrera-Cristian> ");
     if(fgets(cmdline, BUFSIZ, stdin) == NULL) {
       perror("fgets failed");
       exit(1);
     }
-    /*Reads the buffer or the input that was placed by the user*/	
+    /*Reads the buffer or the input that was placed by the user*/
     execute(cmdline) ;
   }
   return 0;
