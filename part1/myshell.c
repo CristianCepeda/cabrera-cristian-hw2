@@ -74,17 +74,24 @@ and thus
 
 for(int i; i < num_processes; i++){
 
-  if(!strcmp(args[0][i], "quit") || !strcmp(args[0][i], "exit")) {
+  int j = 0;
+  char* check_args[MAX_ARGS];
+
+  while(args[i][++j] != NULL){
+
+  check_args[0] = args[i][++j];
+
+  if(!strcmp(check_args[0], "quit") || !strcmp(check_args[0], "exit")) {
     exit(0);
   }
 
   /* check if async call */
-  if(!strcmp(args[nargs-1][i], "&")) { async = 1; args[--nargs][i] = 0; }
+  if(!strcmp(check_args[nargs-1], "&")) { async = 1; check_args[--nargs] = 0; }
   else async = 0;
 
   pid = fork();
   if(pid == 0) { /* child process */
-    execvp(args[0][0], args);
+    execvp(check_args[0], check_args);
     /* return only when exec fails */
     perror("exec failed");
     exit(-1);
@@ -96,6 +103,8 @@ for(int i; i < num_processes; i++){
     exit(1);
   }
 }
+}
+
 }
 
 int main (int argc, char* argv [])
