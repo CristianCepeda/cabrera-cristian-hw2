@@ -10,15 +10,16 @@
 #define MAX_ARGS 20
 #define BUFSIZ 1024
 
-int get_args(char* cmdline, char* args[])
+//To separete process by semicolons :)
+int get_process(char* cmdline, char* process[])
 {
   int i = 0;
 
-  /* if no args */
-  if((args[0] = strtok(cmdline, "\n\t ")) == NULL)
+  /* if no process */
+  if((process[0] = strtok(cmdline, ";")) == NULL)
     return 0;
 
-  while((args[++i] = strtok(NULL, "\n\t ")) != NULL) {
+  while((process[++i] = strtok(NULL, ";")) != NULL) {
     if(i >= MAX_ARGS) {
       printf("Too many arguments!\n");
       exit(1);
@@ -28,12 +29,41 @@ int get_args(char* cmdline, char* args[])
   return i;
 }
 
+int get_args(char* cmdline, char* args[][MAX_ARGS], char* process[], int num_processes)
+{
+  int j;
+
+  for (int x = 0; x < num_processes; x++){
+  int i = 0;
+  /* if no args */
+  if((args[0][0] = strtok(process[x], "\n\t ")) == NULL)
+    return 0;
+
+  while((args[x][++i] = strtok(NULL, "\n\t ")) != NULL) {
+    if(i >= MAX_ARGS) {
+      printf("Too many arguments!\n");
+      exit(1);
+    }
+  }
+  j = i;
+}
+  /* the last one is always NULL */
+  return j;
+}
+
+
 void execute(char* cmdline)
 {
   int pid, async;
-  char* args[MAX_ARGS];
+  char* process[MAX_ARGS];
 
-  int nargs = get_args(cmdline, args);
+  int num_processes = get_process(cmdline, process);
+
+  char* args[num_processes][MAX_ARGS];
+
+
+
+  int nargs = get_args(cmdline, args,process, num_processes);
   if(nargs <= 0) return;
 
 /*
@@ -41,17 +71,20 @@ strcmp() compares two strings
 Returns 0 if they are equal which will make the if statement true
 and thus
 */
-  if(!strcmp(args[0], "quit") || !strcmp(args[0], "exit")) {
+
+for(int i; i < num_processes; i++){
+
+  if(!strcmp(args[0][i], "quit") || !strcmp(args[0][i], "exit")) {
     exit(0);
   }
 
   /* check if async call */
-  if(!strcmp(args[nargs-1], "&")) { async = 1; args[--nargs] = 0; }
+  if(!strcmp(args[nargs-1][i], "&")) { async = 1; args[--nargs][i] = 0; }
   else async = 0;
 
   pid = fork();
   if(pid == 0) { /* child process */
-    execvp(args[0], args);
+    execvp(args[0][0], args);
     /* return only when exec fails */
     perror("exec failed");
     exit(-1);
@@ -62,6 +95,7 @@ and thus
     perror("fork failed");
     exit(1);
   }
+}
 }
 
 int main (int argc, char* argv [])
