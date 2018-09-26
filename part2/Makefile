@@ -5,4 +5,4 @@ multiThreaded.o: multiThreaded.c
 	gcc -c multiThreaded.c
 
 clean:
-	rm *.o myshell	
+	rm *.o multiThreaded	
