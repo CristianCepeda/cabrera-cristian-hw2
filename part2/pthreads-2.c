@@ -20,7 +20,8 @@ int main (int argc, char* argv[]) {
   //--------------------------------------------------------------------------->
   SharedVariable = 0;
   int NUMBER_OF_THREADS = atoi(argv[1]);
-  pthread_barrier_init(&mybarrier, NULL, THREAD_COUNT + 1);
+  pthread_mutex_init(&mutex, NULL);                                             // Create a mutex so threads can have exulsive access to the shared Variable
+  pthread_barrier_init(&mybarrier, NULL, THREAD_COUNT);                         // Create a barrier so we can synchronize after everyone has incremented 20 times
 
 
   //                                                                  [ STEP 3 ]
@@ -87,14 +88,16 @@ void* functionCall(void* thread){
 // and pass in the thread ID number.
 void SimpleThread(int which) {
   int num, val;
-  for(num = 0; num < 20; num++){
-    if(random() > RAND_MAX/2){
-      usleep(500);
-    }
+
+  for(num = 0; num < 20; num++) {
+    pthread_mutex_lock(&mutex); // Lock the mutex to have e
     val = SharedVariable;
     printf("*** thread %d sees value %d\n", which, val);
     SharedVariable = val + 1;
+    pthread_mutex_unlock(&mutex);
   }
+
+  pthread_barrier_wait(&mybarrier); //everyone should stop here and print out the the SharedVariable
   val = SharedVariable;
   printf("Thread %d sees final value %d\n", which, val);
 }
