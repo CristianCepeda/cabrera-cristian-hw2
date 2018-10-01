@@ -3,7 +3,8 @@
 /*                                                                     [ STEPS ]
 ------------------------------------------------------------------------------->
 1 - Validate Users input
-2 - Initialize global shared variable.
+2 - Initialize global shared variables. And create a mutex to use later inside the function calls.
+      - They are used through out the app to keep the state correct.
 3 - Create array with the number of threads desired. And have them call
     functionCall()
 4 - Join the threads and suspend the execution of the calling thread.
@@ -21,8 +22,9 @@ int main (int argc, char* argv[]) {
   SharedVariable = 0;
   threadsCheckedIN = 0;
   NUMBER_OF_THREADS = atoi(argv[1]);
-  pthread_mutex_init(&mutex, NULL);                                             // Create a mutex so threads can have exulsive access to the shared Variable
+  pthread_mutex_init(&mutex, NULL);                                             // Create a mutex so threads can have exclusive access to the shared Variable
   // pthread_barrier_init(&mybarrier, NULL, THREAD_COUNT);                      // Create a barrier so we can synchronize after everyone has incremented 20 times
+                                                                                // Since i'm developing on a mac pthread_barrier_init doesn't work.
 
 
   //                                                                  [ STEP 3 ]
@@ -84,21 +86,18 @@ void* functionCall(void* thread){
   return NULL;
 }
 
-// You need to create a global Variable named
-// SharedVariable
-// and pass in the thread ID number.
 void SimpleThread(int which) {
   int num, val;
 
   for(num = 0; num < 20; num++) {
-    pthread_mutex_lock(&mutex); // Lock the mutex to have e
+    pthread_mutex_lock(&mutex);                                                 // Lock the mutex to have exclusive access to the SharedVariable.
     val = SharedVariable;
     printf("*** thread %d sees value %d\n", which, val);
     SharedVariable = val + 1;
     pthread_mutex_unlock(&mutex);
   }
-  threadsCheckedIN++;
-  waitForThreads();
+  threadsCheckedIN++;                                                           // Once each thread is done adding to 20 have then check in
+  waitForThreads();                                                             // Everyone will join this loop until the last thread that checks in
 
   val = SharedVariable;
   printf("Thread %d sees final value %d\n", which, val);
@@ -109,8 +108,8 @@ void waitForThreads(){
 }
 
 int isDone() {
-  if (threadsCheckedIN == NUMBER_OF_THREADS){
-    return MY_TRUE;
-  }
-  return MY_FALSE;
+  if (threadsCheckedIN == NUMBER_OF_THREADS){                                   // Once each thread sees that the global variable threadsCheckedIN
+    return MY_TRUE;                                                             // equals NUMBER_OF_THREADS then return MY_TRUE
+  }                                                                             // This will cause the loop to end and all each thread to resume
+  return MY_FALSE;                                                              // with the code base.
 }

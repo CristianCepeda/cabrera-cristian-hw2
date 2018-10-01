@@ -5,7 +5,7 @@
 //                                                          [ GLOBAL VARIABLES ]
 //----------------------------------------------------------------------------->
 int SharedVariable;                   // Used in SimpleThread()
-int threadsCheckedIN;
+int threadsCheckedIN;                 // Used in isDone() && SimpleThread()
 int NUMBER_OF_THREADS;
 pthread_mutex_t mutex;
 // pthread_barrier_t mybarrier;
