@@ -19,9 +19,10 @@ int main (int argc, char* argv[]) {
   //                                                                  [ STEP 2 ]
   //--------------------------------------------------------------------------->
   SharedVariable = 0;
-  int NUMBER_OF_THREADS = atoi(argv[1]);
+  threadsCheckedIN = 0;
+  NUMBER_OF_THREADS = atoi(argv[1]);
   pthread_mutex_init(&mutex, NULL);                                             // Create a mutex so threads can have exulsive access to the shared Variable
-  pthread_barrier_init(&mybarrier, NULL, THREAD_COUNT);                         // Create a barrier so we can synchronize after everyone has incremented 20 times
+  // pthread_barrier_init(&mybarrier, NULL, THREAD_COUNT);                      // Create a barrier so we can synchronize after everyone has incremented 20 times
 
 
   //                                                                  [ STEP 3 ]
@@ -96,8 +97,20 @@ void SimpleThread(int which) {
     SharedVariable = val + 1;
     pthread_mutex_unlock(&mutex);
   }
+  threadsCheckedIN++;
+  waitForThreads();
 
-  pthread_barrier_wait(&mybarrier); //everyone should stop here and print out the the SharedVariable
   val = SharedVariable;
   printf("Thread %d sees final value %d\n", which, val);
+}
+
+void waitForThreads(){
+  while(!isDone());
+}
+
+int isDone() {
+  if (threadsCheckedIN == NUMBER_OF_THREADS){
+    return MY_TRUE;
+  }
+  return MY_FALSE;
 }
