@@ -5,6 +5,9 @@
 //                                                          [ GLOBAL VARIABLES ]
 //----------------------------------------------------------------------------->
 int SharedVariable; // Used in SimpleThread()
+pthread_mutex_t mutex;
+pthread_barrier_t mybarrier;
+
 
 //                                                                 [ CONSTANTS ]
 //----------------------------------------------------------------------------->
