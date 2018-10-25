@@ -8,12 +8,12 @@
 
 Option 1
 ```
-gcc pthreads-1.c -o pthreads-1
-gcc pthreads-2.c -o pthreads-2
+> gcc pthreads-1.c -o pthreads-1
+> gcc pthreads-2.c -o pthreads-2
 ```
 Option 2
 ```
-make
+> make
 ```
 ## Run
 

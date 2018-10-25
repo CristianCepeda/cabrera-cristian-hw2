@@ -1,8 +1,5 @@
-output: myshell.o
-	gcc myshell.o -o myshell
-
-myshell.o: myshell.c
-	gcc -c myshell.c
+output: shell.c
+	gcc shell.c -o shell
 
 clean:
-	rm *.o myshell
+	rm *.o shell
